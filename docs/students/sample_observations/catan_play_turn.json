@@ -1,0 +1,1619 @@
+{
+ "game": "catan",
+ "phase": "play_turn",
+ "round": 18,
+ "vps_to_win": 7,
+ "max_rounds": 100,
+ "actions": [
+  {
+   "id": 0,
+   "type": "BUY_DEVELOPMENT_CARD"
+  },
+  {
+   "id": 1,
+   "type": "END_TURN"
+  },
+  {
+   "id": 2,
+   "type": "MARITIME_TRADE",
+   "give": "WHEAT",
+   "give_count": 3,
+   "receive": "BRICK"
+  },
+  {
+   "id": 3,
+   "type": "MARITIME_TRADE",
+   "give": "WHEAT",
+   "give_count": 3,
+   "receive": "ORE"
+  },
+  {
+   "id": 4,
+   "type": "MARITIME_TRADE",
+   "give": "WHEAT",
+   "give_count": 3,
+   "receive": "SHEEP"
+  },
+  {
+   "id": 5,
+   "type": "MARITIME_TRADE",
+   "give": "WHEAT",
+   "give_count": 3,
+   "receive": "WOOD"
+  }
+ ],
+ "me": {
+  "visible_victory_points": 2,
+  "settlements": [
+   15,
+   52
+  ],
+  "cities": [],
+  "roads": [
+   [
+    15,
+    17
+   ],
+   [
+    52,
+    53
+   ]
+  ],
+  "resource_cards": 6,
+  "development_cards": 0,
+  "played_development_cards": {
+   "KNIGHT": 0,
+   "YEAR_OF_PLENTY": 0,
+   "MONOPOLY": 0,
+   "ROAD_BUILDING": 0,
+   "VICTORY_POINT": 0
+  },
+  "longest_road_length": 0,
+  "has_longest_road": false,
+  "has_largest_army": false,
+  "victory_points": 2,
+  "resources": {
+   "WOOD": 1,
+   "BRICK": 0,
+   "SHEEP": 1,
+   "WHEAT": 3,
+   "ORE": 1
+  },
+  "development_cards_in_hand": {
+   "KNIGHT": 0,
+   "YEAR_OF_PLENTY": 0,
+   "MONOPOLY": 0,
+   "ROAD_BUILDING": 0,
+   "VICTORY_POINT": 0
+  }
+ },
+ "opponent": {
+  "visible_victory_points": 3,
+  "settlements": [
+   41
+  ],
+  "cities": [
+   24
+  ],
+  "roads": [
+   [
+    7,
+    24
+   ],
+   [
+    39,
+    41
+   ]
+  ],
+  "resource_cards": 1,
+  "development_cards": 1,
+  "played_development_cards": {
+   "KNIGHT": 1,
+   "YEAR_OF_PLENTY": 0,
+   "MONOPOLY": 0,
+   "ROAD_BUILDING": 0,
+   "VICTORY_POINT": 0
+  },
+  "longest_road_length": 0,
+  "has_longest_road": false,
+  "has_largest_army": false
+ },
+ "board": {
+  "tiles": [
+   {
+    "tile": [
+     -2,
+     0,
+     2
+    ],
+    "resource": null,
+    "number": null,
+    "nodes": [
+     13,
+     14,
+     34,
+     35,
+     36,
+     37
+    ],
+    "edges": [
+     [
+      13,
+      14
+     ],
+     [
+      13,
+      34
+     ],
+     [
+      14,
+      37
+     ],
+     [
+      34,
+      35
+     ],
+     [
+      35,
+      36
+     ],
+     [
+      36,
+      37
+     ]
+    ]
+   },
+   {
+    "tile": [
+     -2,
+     1,
+     1
+    ],
+    "resource": "WOOD",
+    "number": 9,
+    "nodes": [
+     14,
+     15,
+     17,
+     37,
+     38,
+     39
+    ],
+    "edges": [
+     [
+      14,
+      15
+     ],
+     [
+      14,
+      37
+     ],
+     [
+      15,
+      17
+     ],
+     [
+      17,
+      39
+     ],
+     [
+      37,
+      38
+     ],
+     [
+      38,
+      39
+     ]
+    ]
+   },
+   {
+    "tile": [
+     -2,
+     2,
+     0
+    ],
+    "resource": "WHEAT",
+    "number": 8,
+    "nodes": [
+     17,
+     18,
+     39,
+     40,
+     41,
+     42
+    ],
+    "edges": [
+     [
+      17,
+      18
+     ],
+     [
+      17,
+      39
+     ],
+     [
+      18,
+      40
+     ],
+     [
+      39,
+      41
+     ],
+     [
+      40,
+      42
+     ],
+     [
+      41,
+      42
+     ]
+    ]
+   },
+   {
+    "tile": [
+     -1,
+     -1,
+     2
+    ],
+    "resource": "ORE",
+    "number": 11,
+    "nodes": [
+     11,
+     12,
+     13,
+     32,
+     33,
+     34
+    ],
+    "edges": [
+     [
+      11,
+      12
+     ],
+     [
+      11,
+      32
+     ],
+     [
+      12,
+      13
+     ],
+     [
+      13,
+      34
+     ],
+     [
+      32,
+      33
+     ],
+     [
+      33,
+      34
+     ]
+    ]
+   },
+   {
+    "tile": [
+     -1,
+     0,
+     1
+    ],
+    "resource": "WHEAT",
+    "number": 6,
+    "nodes": [
+     3,
+     4,
+     12,
+     13,
+     14,
+     15
+    ],
+    "edges": [
+     [
+      3,
+      4
+     ],
+     [
+      3,
+      12
+     ],
+     [
+      4,
+      15
+     ],
+     [
+      12,
+      13
+     ],
+     [
+      13,
+      14
+     ],
+     [
+      14,
+      15
+     ]
+    ]
+   },
+   {
+    "tile": [
+     -1,
+     1,
+     0
+    ],
+    "resource": "SHEEP",
+    "number": 10,
+    "nodes": [
+     4,
+     5,
+     15,
+     16,
+     17,
+     18
+    ],
+    "edges": [
+     [
+      4,
+      5
+     ],
+     [
+      4,
+      15
+     ],
+     [
+      5,
+      16
+     ],
+     [
+      15,
+      17
+     ],
+     [
+      16,
+      18
+     ],
+     [
+      17,
+      18
+     ]
+    ]
+   },
+   {
+    "tile": [
+     -1,
+     2,
+     -1
+    ],
+    "resource": "BRICK",
+    "number": 12,
+    "nodes": [
+     16,
+     18,
+     21,
+     40,
+     43,
+     44
+    ],
+    "edges": [
+     [
+      16,
+      18
+     ],
+     [
+      16,
+      21
+     ],
+     [
+      18,
+      40
+     ],
+     [
+      21,
+      43
+     ],
+     [
+      40,
+      44
+     ],
+     [
+      43,
+      44
+     ]
+    ]
+   },
+   {
+    "tile": [
+     0,
+     -2,
+     2
+    ],
+    "resource": "WHEAT",
+    "number": 4,
+    "nodes": [
+     10,
+     11,
+     29,
+     30,
+     31,
+     32
+    ],
+    "edges": [
+     [
+      10,
+      11
+     ],
+     [
+      10,
+      29
+     ],
+     [
+      11,
+      32
+     ],
+     [
+      29,
+      30
+     ],
+     [
+      30,
+      31
+     ],
+     [
+      31,
+      32
+     ]
+    ]
+   },
+   {
+    "tile": [
+     0,
+     -1,
+     1
+    ],
+    "resource": "WHEAT",
+    "number": 3,
+    "nodes": [
+     2,
+     3,
+     9,
+     10,
+     11,
+     12
+    ],
+    "edges": [
+     [
+      2,
+      3
+     ],
+     [
+      2,
+      9
+     ],
+     [
+      3,
+      12
+     ],
+     [
+      9,
+      10
+     ],
+     [
+      10,
+      11
+     ],
+     [
+      11,
+      12
+     ]
+    ]
+   },
+   {
+    "tile": [
+     0,
+     0,
+     0
+    ],
+    "resource": "BRICK",
+    "number": 9,
+    "nodes": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5
+    ],
+    "edges": [
+     [
+      0,
+      1
+     ],
+     [
+      0,
+      5
+     ],
+     [
+      1,
+      2
+     ],
+     [
+      2,
+      3
+     ],
+     [
+      3,
+      4
+     ],
+     [
+      4,
+      5
+     ]
+    ]
+   },
+   {
+    "tile": [
+     0,
+     1,
+     -1
+    ],
+    "resource": "ORE",
+    "number": 4,
+    "nodes": [
+     0,
+     5,
+     16,
+     19,
+     20,
+     21
+    ],
+    "edges": [
+     [
+      0,
+      5
+     ],
+     [
+      0,
+      20
+     ],
+     [
+      5,
+      16
+     ],
+     [
+      16,
+      21
+     ],
+     [
+      19,
+      20
+     ],
+     [
+      19,
+      21
+     ]
+    ]
+   },
+   {
+    "tile": [
+     0,
+     2,
+     -2
+    ],
+    "resource": "WOOD",
+    "number": 6,
+    "nodes": [
+     19,
+     21,
+     43,
+     45,
+     46,
+     47
+    ],
+    "edges": [
+     [
+      19,
+      21
+     ],
+     [
+      19,
+      46
+     ],
+     [
+      21,
+      43
+     ],
+     [
+      43,
+      47
+     ],
+     [
+      45,
+      46
+     ],
+     [
+      45,
+      47
+     ]
+    ]
+   },
+   {
+    "tile": [
+     1,
+     -2,
+     1
+    ],
+    "resource": "BRICK",
+    "number": 2,
+    "nodes": [
+     8,
+     9,
+     10,
+     27,
+     28,
+     29
+    ],
+    "edges": [
+     [
+      8,
+      9
+     ],
+     [
+      8,
+      27
+     ],
+     [
+      9,
+      10
+     ],
+     [
+      10,
+      29
+     ],
+     [
+      27,
+      28
+     ],
+     [
+      28,
+      29
+     ]
+    ]
+   },
+   {
+    "tile": [
+     1,
+     -1,
+     0
+    ],
+    "resource": "SHEEP",
+    "number": 5,
+    "nodes": [
+     1,
+     2,
+     6,
+     7,
+     8,
+     9
+    ],
+    "edges": [
+     [
+      1,
+      2
+     ],
+     [
+      1,
+      6
+     ],
+     [
+      2,
+      9
+     ],
+     [
+      6,
+      7
+     ],
+     [
+      7,
+      8
+     ],
+     [
+      8,
+      9
+     ]
+    ]
+   },
+   {
+    "tile": [
+     1,
+     0,
+     -1
+    ],
+    "resource": "SHEEP",
+    "number": 10,
+    "nodes": [
+     0,
+     1,
+     6,
+     20,
+     22,
+     23
+    ],
+    "edges": [
+     [
+      0,
+      1
+     ],
+     [
+      0,
+      20
+     ],
+     [
+      1,
+      6
+     ],
+     [
+      6,
+      23
+     ],
+     [
+      20,
+      22
+     ],
+     [
+      22,
+      23
+     ]
+    ]
+   },
+   {
+    "tile": [
+     1,
+     1,
+     -2
+    ],
+    "resource": "WOOD",
+    "number": 11,
+    "nodes": [
+     19,
+     20,
+     22,
+     46,
+     48,
+     49
+    ],
+    "edges": [
+     [
+      19,
+      20
+     ],
+     [
+      19,
+      46
+     ],
+     [
+      20,
+      22
+     ],
+     [
+      22,
+      49
+     ],
+     [
+      46,
+      48
+     ],
+     [
+      48,
+      49
+     ]
+    ]
+   },
+   {
+    "tile": [
+     2,
+     -2,
+     0
+    ],
+    "resource": "ORE",
+    "number": 5,
+    "nodes": [
+     7,
+     8,
+     24,
+     25,
+     26,
+     27
+    ],
+    "edges": [
+     [
+      7,
+      8
+     ],
+     [
+      7,
+      24
+     ],
+     [
+      8,
+      27
+     ],
+     [
+      24,
+      25
+     ],
+     [
+      25,
+      26
+     ],
+     [
+      26,
+      27
+     ]
+    ]
+   },
+   {
+    "tile": [
+     2,
+     -1,
+     -1
+    ],
+    "resource": "SHEEP",
+    "number": 3,
+    "nodes": [
+     6,
+     7,
+     23,
+     24,
+     52,
+     53
+    ],
+    "edges": [
+     [
+      6,
+      7
+     ],
+     [
+      6,
+      23
+     ],
+     [
+      7,
+      24
+     ],
+     [
+      23,
+      52
+     ],
+     [
+      24,
+      53
+     ],
+     [
+      52,
+      53
+     ]
+    ]
+   },
+   {
+    "tile": [
+     2,
+     0,
+     -2
+    ],
+    "resource": "WOOD",
+    "number": 8,
+    "nodes": [
+     22,
+     23,
+     49,
+     50,
+     51,
+     52
+    ],
+    "edges": [
+     [
+      22,
+      23
+     ],
+     [
+      22,
+      49
+     ],
+     [
+      23,
+      52
+     ],
+     [
+      49,
+      50
+     ],
+     [
+      50,
+      51
+     ],
+     [
+      51,
+      52
+     ]
+    ]
+   }
+  ],
+  "ports": [
+   {
+    "resource": null,
+    "nodes": [
+     28,
+     29
+    ]
+   },
+   {
+    "resource": null,
+    "nodes": [
+     38,
+     39
+    ]
+   },
+   {
+    "resource": null,
+    "nodes": [
+     45,
+     47
+    ]
+   },
+   {
+    "resource": null,
+    "nodes": [
+     52,
+     53
+    ]
+   },
+   {
+    "resource": "BRICK",
+    "nodes": [
+     48,
+     49
+    ]
+   },
+   {
+    "resource": "ORE",
+    "nodes": [
+     40,
+     44
+    ]
+   },
+   {
+    "resource": "SHEEP",
+    "nodes": [
+     32,
+     33
+    ]
+   },
+   {
+    "resource": "WHEAT",
+    "nodes": [
+     35,
+     36
+    ]
+   },
+   {
+    "resource": "WOOD",
+    "nodes": [
+     25,
+     26
+    ]
+   }
+  ]
+ },
+ "robber_tile": [
+  2,
+  -2,
+  0
+ ],
+ "development_cards_left": 23,
+ "building_costs": {
+  "ROAD": {
+   "WOOD": 1,
+   "BRICK": 1
+  },
+  "SETTLEMENT": {
+   "WOOD": 1,
+   "BRICK": 1,
+   "SHEEP": 1,
+   "WHEAT": 1
+  },
+  "CITY": {
+   "WHEAT": 2,
+   "ORE": 3
+  },
+  "DEVELOPMENT_CARD": {
+   "SHEEP": 1,
+   "WHEAT": 1,
+   "ORE": 1
+  }
+ },
+ "log": [
+  {
+   "player": "me",
+   "type": "BUILD_SETTLEMENT",
+   "node": 15
+  },
+  {
+   "player": "me",
+   "type": "BUILD_ROAD",
+   "edge": [
+    15,
+    17
+   ]
+  },
+  {
+   "player": "opponent",
+   "type": "BUILD_SETTLEMENT",
+   "node": 41
+  },
+  {
+   "player": "opponent",
+   "type": "BUILD_ROAD",
+   "edge": [
+    39,
+    41
+   ]
+  },
+  {
+   "player": "opponent",
+   "type": "BUILD_SETTLEMENT",
+   "node": 24
+  },
+  {
+   "player": "opponent",
+   "type": "BUILD_ROAD",
+   "edge": [
+    7,
+    24
+   ]
+  },
+  {
+   "player": "me",
+   "type": "BUILD_SETTLEMENT",
+   "node": 52
+  },
+  {
+   "player": "me",
+   "type": "BUILD_ROAD",
+   "edge": [
+    52,
+    53
+   ]
+  },
+  {
+   "player": "me",
+   "type": "ROLL",
+   "dice": [
+    6,
+    4
+   ]
+  },
+  {
+   "player": "me",
+   "type": "END_TURN"
+  },
+  {
+   "player": "opponent",
+   "type": "ROLL",
+   "dice": [
+    6,
+    5
+   ]
+  },
+  {
+   "player": "opponent",
+   "type": "END_TURN"
+  },
+  {
+   "player": "me",
+   "type": "ROLL",
+   "dice": [
+    3,
+    5
+   ]
+  },
+  {
+   "player": "me",
+   "type": "END_TURN"
+  },
+  {
+   "player": "opponent",
+   "type": "ROLL",
+   "dice": [
+    4,
+    6
+   ]
+  },
+  {
+   "player": "opponent",
+   "type": "END_TURN"
+  },
+  {
+   "player": "me",
+   "type": "ROLL",
+   "dice": [
+    3,
+    5
+   ]
+  },
+  {
+   "player": "me",
+   "type": "MARITIME_TRADE",
+   "give": "WOOD",
+   "give_count": 3,
+   "receive": "SHEEP"
+  },
+  {
+   "player": "me",
+   "type": "END_TURN"
+  },
+  {
+   "player": "opponent",
+   "type": "ROLL",
+   "dice": [
+    6,
+    5
+   ]
+  },
+  {
+   "player": "opponent",
+   "type": "END_TURN"
+  },
+  {
+   "player": "me",
+   "type": "ROLL",
+   "dice": [
+    6,
+    4
+   ]
+  },
+  {
+   "player": "me",
+   "type": "MARITIME_TRADE",
+   "give": "SHEEP",
+   "give_count": 3,
+   "receive": "WHEAT"
+  },
+  {
+   "player": "me",
+   "type": "END_TURN"
+  },
+  {
+   "player": "opponent",
+   "type": "ROLL",
+   "dice": [
+    4,
+    4
+   ]
+  },
+  {
+   "player": "opponent",
+   "type": "END_TURN"
+  },
+  {
+   "player": "me",
+   "type": "ROLL",
+   "dice": [
+    2,
+    3
+   ]
+  },
+  {
+   "player": "me",
+   "type": "END_TURN"
+  },
+  {
+   "player": "opponent",
+   "type": "ROLL",
+   "dice": [
+    3,
+    1
+   ]
+  },
+  {
+   "player": "opponent",
+   "type": "BUY_DEVELOPMENT_CARD"
+  },
+  {
+   "player": "opponent",
+   "type": "PLAY_KNIGHT_CARD"
+  },
+  {
+   "player": "opponent",
+   "type": "MOVE_ROBBER",
+   "tile": [
+    0,
+    1,
+    -1
+   ],
+   "stole_from": null
+  },
+  {
+   "player": "opponent",
+   "type": "END_TURN"
+  },
+  {
+   "player": "me",
+   "type": "ROLL",
+   "dice": [
+    1,
+    2
+   ]
+  },
+  {
+   "player": "me",
+   "type": "MARITIME_TRADE",
+   "give": "SHEEP",
+   "give_count": 3,
+   "receive": "WOOD"
+  },
+  {
+   "player": "me",
+   "type": "END_TURN"
+  },
+  {
+   "player": "opponent",
+   "type": "ROLL",
+   "dice": [
+    6,
+    5
+   ]
+  },
+  {
+   "player": "opponent",
+   "type": "END_TURN"
+  },
+  {
+   "player": "me",
+   "type": "ROLL",
+   "dice": [
+    4,
+    5
+   ]
+  },
+  {
+   "player": "me",
+   "type": "MARITIME_TRADE",
+   "give": "WOOD",
+   "give_count": 3,
+   "receive": "SHEEP"
+  },
+  {
+   "player": "me",
+   "type": "END_TURN"
+  },
+  {
+   "player": "opponent",
+   "type": "ROLL",
+   "dice": [
+    4,
+    3
+   ]
+  },
+  {
+   "player": "opponent",
+   "type": "MOVE_ROBBER",
+   "tile": [
+    1,
+    -2,
+    1
+   ],
+   "stole_from": null
+  },
+  {
+   "player": "opponent",
+   "type": "END_TURN"
+  },
+  {
+   "player": "me",
+   "type": "ROLL",
+   "dice": [
+    2,
+    3
+   ]
+  },
+  {
+   "player": "me",
+   "type": "END_TURN"
+  },
+  {
+   "player": "opponent",
+   "type": "ROLL",
+   "dice": [
+    6,
+    4
+   ]
+  },
+  {
+   "player": "opponent",
+   "type": "END_TURN"
+  },
+  {
+   "player": "me",
+   "type": "ROLL",
+   "dice": [
+    4,
+    5
+   ]
+  },
+  {
+   "player": "me",
+   "type": "END_TURN"
+  },
+  {
+   "player": "opponent",
+   "type": "ROLL",
+   "dice": [
+    4,
+    4
+   ]
+  },
+  {
+   "player": "opponent",
+   "type": "BUY_DEVELOPMENT_CARD"
+  },
+  {
+   "player": "opponent",
+   "type": "END_TURN"
+  },
+  {
+   "player": "me",
+   "type": "ROLL",
+   "dice": [
+    5,
+    6
+   ]
+  },
+  {
+   "player": "me",
+   "type": "END_TURN"
+  },
+  {
+   "player": "opponent",
+   "type": "ROLL",
+   "dice": [
+    1,
+    3
+   ]
+  },
+  {
+   "player": "opponent",
+   "type": "END_TURN"
+  },
+  {
+   "player": "me",
+   "type": "ROLL",
+   "dice": [
+    3,
+    4
+   ]
+  },
+  {
+   "player": "me",
+   "type": "MOVE_ROBBER",
+   "tile": [
+    -2,
+    0,
+    2
+   ],
+   "stole_from": null
+  },
+  {
+   "player": "me",
+   "type": "END_TURN"
+  },
+  {
+   "player": "opponent",
+   "type": "ROLL",
+   "dice": [
+    1,
+    4
+   ]
+  },
+  {
+   "player": "opponent",
+   "type": "END_TURN"
+  },
+  {
+   "player": "me",
+   "type": "ROLL",
+   "dice": [
+    6,
+    6
+   ]
+  },
+  {
+   "player": "me",
+   "type": "END_TURN"
+  },
+  {
+   "player": "opponent",
+   "type": "ROLL",
+   "dice": [
+    5,
+    3
+   ]
+  },
+  {
+   "player": "opponent",
+   "type": "END_TURN"
+  },
+  {
+   "player": "me",
+   "type": "ROLL",
+   "dice": [
+    4,
+    2
+   ]
+  },
+  {
+   "player": "me",
+   "type": "MARITIME_TRADE",
+   "give": "WOOD",
+   "give_count": 3,
+   "receive": "WHEAT"
+  },
+  {
+   "player": "me",
+   "type": "MARITIME_TRADE",
+   "give": "WHEAT",
+   "give_count": 3,
+   "receive": "WOOD"
+  },
+  {
+   "player": "me",
+   "type": "END_TURN"
+  },
+  {
+   "player": "opponent",
+   "type": "ROLL",
+   "dice": [
+    4,
+    6
+   ]
+  },
+  {
+   "player": "opponent",
+   "type": "END_TURN"
+  },
+  {
+   "player": "me",
+   "type": "ROLL",
+   "dice": [
+    4,
+    1
+   ]
+  },
+  {
+   "player": "me",
+   "type": "MARITIME_TRADE",
+   "give": "SHEEP",
+   "give_count": 3,
+   "receive": "ORE"
+  },
+  {
+   "player": "me",
+   "type": "END_TURN"
+  },
+  {
+   "player": "opponent",
+   "type": "ROLL",
+   "dice": [
+    6,
+    3
+   ]
+  },
+  {
+   "player": "opponent",
+   "type": "BUILD_CITY",
+   "node": 24
+  },
+  {
+   "player": "opponent",
+   "type": "END_TURN"
+  },
+  {
+   "player": "me",
+   "type": "ROLL",
+   "dice": [
+    4,
+    3
+   ]
+  },
+  {
+   "player": "me",
+   "type": "MOVE_ROBBER",
+   "tile": [
+    2,
+    -2,
+    0
+   ],
+   "stole_from": "opponent",
+   "stolen_resource": "WHEAT"
+  },
+  {
+   "player": "me",
+   "type": "END_TURN"
+  },
+  {
+   "player": "opponent",
+   "type": "ROLL",
+   "dice": [
+    2,
+    6
+   ]
+  },
+  {
+   "player": "opponent",
+   "type": "END_TURN"
+  },
+  {
+   "player": "me",
+   "type": "ROLL",
+   "dice": [
+    4,
+    2
+   ]
+  },
+  {
+   "player": "me",
+   "type": "MARITIME_TRADE",
+   "give": "WOOD",
+   "give_count": 3,
+   "receive": "SHEEP"
+  },
+  {
+   "player": "me",
+   "type": "END_TURN"
+  },
+  {
+   "player": "opponent",
+   "type": "ROLL",
+   "dice": [
+    4,
+    1
+   ]
+  },
+  {
+   "player": "opponent",
+   "type": "END_TURN"
+  },
+  {
+   "player": "me",
+   "type": "ROLL",
+   "dice": [
+    1,
+    1
+   ]
+  },
+  {
+   "player": "me",
+   "type": "END_TURN"
+  },
+  {
+   "player": "opponent",
+   "type": "ROLL",
+   "dice": [
+    4,
+    5
+   ]
+  },
+  {
+   "player": "opponent",
+   "type": "END_TURN"
+  },
+  {
+   "player": "me",
+   "type": "ROLL",
+   "dice": [
+    5,
+    1
+   ]
+  }
+ ],
+ "time_remaining_s": 4.25
+}

@@ -1,0 +1,73 @@
+{
+ "game": "road_trip",
+ "start": "madrid",
+ "required": [
+  "madrid",
+  "bucharest",
+  "lille",
+  "rennes",
+  "riga",
+  "varna",
+  "brno",
+  "geneva",
+  "timisoara",
+  "turin",
+  "sofia",
+  "nis",
+  "strasbourg",
+  "skopje",
+  "pristina",
+  "thessaloniki",
+  "patras",
+  "granada",
+  "a_coruna",
+  "bordeaux",
+  "brussels",
+  "kaunas",
+  "bremen",
+  "plovdiv",
+  "amsterdam"
+ ],
+ "time_limit_s": 5,
+ "cities": {
+  "madrid": {
+   "name": "Madrid",
+   "country": "Spain",
+   "lat": 40.4168,
+   "lon": -3.7038
+  },
+  "barcelona": {
+   "name": "Barcelona",
+   "country": "Spain",
+   "lat": 41.3851,
+   "lon": 2.1734
+  },
+  "valencia": {
+   "name": "Valencia",
+   "country": "Spain",
+   "lat": 39.4699,
+   "lon": -0.3763
+  }
+ },
+ "roads": [
+  {
+   "from": "a_coruna",
+   "to": "bilbao",
+   "km": 543,
+   "bidirectional": true
+  },
+  {
+   "from": "a_coruna",
+   "to": "madrid",
+   "km": 592,
+   "bidirectional": true
+  },
+  {
+   "from": "a_coruna",
+   "to": "porto",
+   "km": 301,
+   "bidirectional": true
+  }
+ ],
+ "_note": "Shortened for this example: the real problem lists all 105 cities and 262 roads, and has no _note."
+}

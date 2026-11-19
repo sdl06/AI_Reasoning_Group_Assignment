@@ -1,0 +1,47 @@
+{
+  "startup_timeout_s": 15,
+  "memory_limit_mb": 2048,
+  "forbidden_imports": [
+    "stockfish",
+    "chess.engine",
+    "catanatron.players",
+    "catanatron_experimental",
+    "subprocess",
+    "socket",
+    "requests",
+    "urllib.request",
+    "http.client",
+    "httpx",
+    "aiohttp"
+  ],
+  "road_trip": {
+    "start_city": "madrid",
+    "required_cities": 25,
+    "time_limit_s": 5,
+    "tiebreak_time_limit_s": 5,
+    "tiebreak_max_attempts": 3,
+    "max_route_length": 5000
+  },
+  "chess": {
+    "format": "two_games",
+    "clock_s": 5,
+    "single_game_clock_s": 10,
+    "challenge_limit_s": 60,
+    "max_plies": 400
+  },
+  "battleship": {
+    "board_size": 10,
+    "clock_s": 5,
+    "challenge_limit_s": 60,
+    "max_rounds": 150,
+    "sonar_uses": 2,
+    "sonar_correct": 0.8
+  },
+  "catan": {
+    "vps_to_win": 7,
+    "clock_s": 5,
+    "challenge_limit_s": 60,
+    "max_rounds": 100,
+    "max_decisions": 3000
+  }
+}

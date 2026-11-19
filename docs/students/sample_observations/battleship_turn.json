@@ -1,0 +1,237 @@
+{
+ "game": "battleship",
+ "phase": "turn",
+ "turn": 8,
+ "max_rounds": 150,
+ "board_size": 10,
+ "my_ships": [
+  {
+   "ship": "carrier",
+   "length": 5,
+   "orientation": "V",
+   "cells": [
+    [
+     4,
+     2
+    ],
+    [
+     5,
+     2
+    ],
+    [
+     6,
+     2
+    ],
+    [
+     7,
+     2
+    ],
+    [
+     8,
+     2
+    ]
+   ],
+   "damaged_cells": [
+    [
+     4,
+     2
+    ]
+   ],
+   "immobile": true,
+   "sunk": false
+  },
+  {
+   "ship": "battleship",
+   "length": 4,
+   "orientation": "H",
+   "cells": [
+    [
+     0,
+     2
+    ],
+    [
+     0,
+     3
+    ],
+    [
+     0,
+     4
+    ],
+    [
+     0,
+     5
+    ]
+   ],
+   "damaged_cells": [],
+   "immobile": false,
+   "sunk": false
+  },
+  {
+   "ship": "cruiser",
+   "length": 3,
+   "orientation": "H",
+   "cells": [
+    [
+     1,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     1,
+     3
+    ]
+   ],
+   "damaged_cells": [],
+   "immobile": false,
+   "sunk": false
+  },
+  {
+   "ship": "submarine",
+   "length": 3,
+   "orientation": "H",
+   "cells": [
+    [
+     4,
+     7
+    ],
+    [
+     4,
+     8
+    ],
+    [
+     4,
+     9
+    ]
+   ],
+   "damaged_cells": [],
+   "immobile": false,
+   "sunk": false
+  },
+  {
+   "ship": "destroyer",
+   "length": 2,
+   "orientation": "H",
+   "cells": [
+    [
+     2,
+     4
+    ],
+    [
+     2,
+     5
+    ]
+   ],
+   "damaged_cells": [],
+   "immobile": false,
+   "sunk": false
+  }
+ ],
+ "legal_moves": [
+  {
+   "ship": "battleship",
+   "direction": "E"
+  },
+  {
+   "ship": "battleship",
+   "direction": "W"
+  },
+  {
+   "ship": "cruiser",
+   "direction": "S"
+  },
+  {
+   "ship": "cruiser",
+   "direction": "E"
+  },
+  {
+   "ship": "cruiser",
+   "direction": "W"
+  },
+  {
+   "ship": "submarine",
+   "direction": "N"
+  },
+  {
+   "ship": "submarine",
+   "direction": "S"
+  },
+  {
+   "ship": "submarine",
+   "direction": "W"
+  },
+  {
+   "ship": "destroyer",
+   "direction": "N"
+  },
+  {
+   "ship": "destroyer",
+   "direction": "S"
+  },
+  {
+   "ship": "destroyer",
+   "direction": "E"
+  },
+  {
+   "ship": "destroyer",
+   "direction": "W"
+  }
+ ],
+ "my_shots": [
+  {
+   "turn": 1,
+   "target": [
+    0,
+    8
+   ],
+   "result": "HIT"
+  },
+  {
+   "turn": 3,
+   "target": [
+    1,
+    8
+   ],
+   "result": "SUNK",
+   "sunk_length": 2
+  },
+  {
+   "turn": 5,
+   "target": [
+    8,
+    1
+   ],
+   "result": "MISS"
+  }
+ ],
+ "my_sonar": [
+  {
+   "turn": 7,
+   "center": [
+    4,
+    4
+   ],
+   "reading": 3
+  }
+ ],
+ "sonar_remaining": 1,
+ "sonar_correct_probability": 0.8,
+ "enemy_ships_sunk": [
+  2
+ ],
+ "enemy_segments_destroyed": 2,
+ "damage_received": [
+  {
+   "turn": 2,
+   "cell": [
+    4,
+    2
+   ],
+   "ship": "carrier",
+   "sunk": false
+  }
+ ],
+ "time_remaining_s": 4.25
+}

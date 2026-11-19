@@ -1,0 +1,5 @@
+{
+  "iberia_4": {"start": "madrid", "required": ["madrid", "barcelona", "valencia", "sevilla"]},
+  "france_6": {"start": "madrid", "required": ["madrid", "bordeaux", "paris", "lyon", "marseille", "toulouse"]},
+  "central_8": {"start": "madrid", "required": ["madrid", "paris", "brussels", "cologne", "frankfurt", "zurich", "milan", "barcelona"]}
+}

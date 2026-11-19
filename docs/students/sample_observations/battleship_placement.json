@@ -1,0 +1,28 @@
+{
+ "game": "battleship",
+ "phase": "placement",
+ "board_size": 10,
+ "fleet": [
+  {
+   "ship": "carrier",
+   "length": 5
+  },
+  {
+   "ship": "battleship",
+   "length": 4
+  },
+  {
+   "ship": "cruiser",
+   "length": 3
+  },
+  {
+   "ship": "submarine",
+   "length": 3
+  },
+  {
+   "ship": "destroyer",
+   "length": 2
+  }
+ ],
+ "time_remaining_s": 4.25
+}

@@ -1,0 +1,4 @@
+{
+  "start": "madrid",
+  "required": ["madrid", "lisbon", "porto", "sevilla", "barcelona", "bordeaux", "lyon", "paris", "brussels", "amsterdam", "hamburg", "berlin", "prague", "warsaw", "krakow", "vienna", "munich", "zurich", "milan", "florence", "zagreb", "budapest", "bucharest", "sofia", "athens"]
+}
