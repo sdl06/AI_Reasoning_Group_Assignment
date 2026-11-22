@@ -10,6 +10,7 @@ You may not use chess.engine, Stockfish or any other existing chess engine.
 Keep the function names and signatures below. Add any helpers you need.
 """
 import random
+import chess
 
 
 def act(observation):
@@ -50,6 +51,8 @@ def minimax(fen, depth):
     A leaf is a position at depth 0 or a finished game. Count every position you visit,
     including the root. Returns {"value": score, "nodes": positions_visited}.
     """
+    if board.is_checkmate():
+        return -100_000 if board.turn == chess.WHITE else 100_000
     raise NotImplementedError
 
 
