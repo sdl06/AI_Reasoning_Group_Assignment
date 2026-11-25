@@ -53,3 +53,6 @@ A whole game uses about 0.15 seconds of the 5 second clock on a laptop. Each tur
  
 #### Limits
 Treating ships as independent means beliefs can put two ships on the same cells, which matters most early on. The move rate guesses are fixed, and a rival that moves only some ships, or moves them away from our shots on purpose, is not modelled. When several ships are hit next to each other, `mark_sunk` can pick the wrong cells for a sunk ship. With more time we would use a particle filter over whole fleets, which handles overlap and the one ship per turn rule exactly, and learn a better danger map for our own moves from the rival's shot pattern.
+
+## Use of generative AI
+We used AI to assist us with the development of battleship_agent.py and the structure of this README. It helped with the local test setup and the baseline comparison. We then ran the agent on the course judge, checked that all three required functions pass check_requirements, compared it against demo_a, demo_b and our baseline over 100 games each, and went through the code to make sure we can understand and explain it. All of the numbers in the README come from our own runs on the judge and are not forged.
