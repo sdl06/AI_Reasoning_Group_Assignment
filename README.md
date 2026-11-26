@@ -26,4 +26,22 @@ run_game("catan", "games/catan/catan_agent.py", opponent="demo", quiet=True)
 check_requirements("games/catan/catan_agent.py", games=["catan"])
 ```
 
+## Road Trip agent (ready to use)
+
+| Item | Path |
+|---|---|
+| Competing agent | [`games/european_road_trip/roadtrip_agent.py`](games/european_road_trip/roadtrip_agent.py) |
+| First version (baseline) | [`games/european_road_trip/roadtrip_v1.py`](games/european_road_trip/roadtrip_v1.py) |
+| Technical write-up | [`games/european_road_trip/TECHNICAL.md`](games/european_road_trip/TECHNICAL.md) |
+
+Results: 4/4 required checks pass. Over 50 races: 50 wins vs `demo_a` (12,977 km vs 15,879 km on average), and 1 win and 49 draws vs the first version.
+
+```python
+from tournament.runner import run_game
+from tournament.academic_checks import check_requirements
+
+run_game("road_trip", "games/european_road_trip/roadtrip_agent.py", opponent="demo", quiet=True)
+check_requirements("games/european_road_trip/roadtrip_agent.py", games=["road_trip"])
+```
+
 Student guide for all four challenges: [`docs/students/README.md`](docs/students/README.md).
