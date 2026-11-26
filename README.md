@@ -99,3 +99,22 @@ check_requirements("games/european_road_trip/roadtrip_agent.py", games=["road_tr
 ```
 
 Student guide for all four challenges: [`docs/students/README.md`](docs/students/README.md).
+
+```
+
+## Chess agent
+
+The [competing agent](games/chess/chess_agent.py) reads the current position from the tournament's FEN and uses `python-chess` to generate legal moves. Each turn, `act()` runs alpha-beta search to a fixed depth of two plies (our move and one opponent reply) and returns the chosen move in UCI format.
+
+- **Evaluation.** The score is White's material minus Black's, with values of 1 for a pawn, 3 for a knight or bishop, 5 for a rook, and 9 for a queen. Each pawn or knight on `d4`, `e4`, `d5`, or `e5` adds 0.1 for its side. A White win scores +100,000, a Black win scores −100,000, and a draw scores 0.
+- **Search.** White maximizes the score and Black minimizes it. Plain `minimax(fen, depth)` is the baseline. `alphabeta(fen, depth)` uses the same evaluation and stops exploring a branch when its bounds show it cannot improve the ancestor's choice. Both functions return the score and the number of positions visited. `act()` uses the same alpha-beta helper, which also tracks the best move.
+- **Verification.** All three official chess checks passed. At depth two, alpha-beta matched minimax and visited fewer positions on all four judge test positions. In a practice match against the bundled demo (seed 42), the agent won one game and drew the other without timing out.
+- **Limits.** The search uses a fixed depth rather than adjusting to the clock, so it can miss tactics that take more than two plies. It starts from the current FEN and does not replay prior moves to anticipate repetition.
+
+```python
+from tournament.runner import run_game
+from tournament.academic_checks import check_requirements
+
+check_requirements("games/chess/chess_agent.py", games=["chess"])
+run_game("chess", "games/chess/chess_agent.py", opponent="demo", seed=42, live=False)
+```
