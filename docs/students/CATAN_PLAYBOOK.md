@@ -240,14 +240,20 @@ Stop when gains plateau on the 500-seed eval. Extra complexity that does not mov
 
 ## Step 9 — Package and explain
 
-1. Single file `catan_agent.py` with `Q` embedded, no illegal imports.
-2. Team `README.md` section for Catan using the template in [ASSIGNMENT.md](ASSIGNMENT.md):
-   - problem formulation (states, actions, observation, objective)
-   - algorithms and where they live in the file
-   - baseline vs improved numbers (seeds, opponents, win rates)
-   - clock behaviour
-   - limits / what you would do next
-3. Zip with the other three agents for the full match.
+1. Single file `games/catan/catan_agent.py` with `Q` embedded, no illegal imports.
+2. Technical write-up: [games/catan/TECHNICAL.md](../../games/catan/TECHNICAL.md) (also summarised in the repo root `README.md`).
+3. Held-out numbers: [CATAN_EVAL.md](CATAN_EVAL.md).
+4. Copy `catan_agent.py` into your team zip with the other three agents for a full match.
+
+### Quick verify
+
+```python
+from tournament.runner import run_game
+from tournament.academic_checks import check_requirements
+
+run_game("catan", "games/catan/catan_agent.py", opponent="demo", quiet=True)
+check_requirements("games/catan/catan_agent.py", games=["catan"])
+```
 
 ---
 
