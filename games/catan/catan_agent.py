@@ -39,9 +39,49 @@ PRIORITY = [
 ]
 
 
+# When True, act may override the heuristic if Q has a clear preference.
+USE_Q = True
+# Minimum Q advantage over the heuristic action before we override.
+Q_MARGIN = 0.05
+
+
 def act(observation):
-    """Called at each decision. Return {"action": <legal id>}."""
-    return {"action": heuristic_policy(observation)}
+    """H+Q policy: start from the heuristic; override only when Q clearly disagrees.
+
+    If the clock is nearly empty, skip scoring and use the fast heuristic.
+    During offline training time_remaining_s may be None — treat that as plenty of time.
+    """
+    actions = observation["actions"]
+    if not actions:
+        raise ValueError("no legal actions")
+
+    remaining = observation.get("time_remaining_s")
+    if remaining is not None and remaining < 0.35:
+        return {"action": heuristic_policy(observation)}
+
+    heur_id = heuristic_policy(observation)
+    if not USE_Q or not Q:
+        return {"action": heur_id}
+
+    features = state_features(observation)
+    scored = []
+    for action in actions:
+        key = _q_key(features, action["type"])
+        if key in Q:
+            scored.append((Q[key], action["id"]))
+
+    if not scored:
+        return {"action": heur_id}
+
+    best_q, best_id = max(scored, key=lambda t: (t[0], t[1] == heur_id))
+    heur_action = _action_by_id(observation, heur_id)
+    heur_key = _q_key(features, heur_action["type"]) if heur_action else None
+    heur_q = Q.get(heur_key, None) if heur_key else None
+
+    # Override only when the Q-best action beats the heuristic action by a margin.
+    if best_id != heur_id and (heur_q is None or best_q >= heur_q + Q_MARGIN):
+        return {"action": best_id}
+    return {"action": heur_id}
 
 
 # ---------------------------------------------------------------------------------
