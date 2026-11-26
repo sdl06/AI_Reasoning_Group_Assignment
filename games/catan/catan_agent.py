@@ -45,6 +45,144 @@ def act(observation):
 
 
 # ---------------------------------------------------------------------------------
+# Step 4 — public log inference (certain deductions only)
+# ---------------------------------------------------------------------------------
+
+
+def estimate_opponent_resources(observation):
+    """Reconstruct a lower-bound estimate of the opponent's hand from the public log.
+
+    Certain: dice payouts to buildings we have seen, spends on builds/trades/dev buys,
+    cards we stole from them, cards they stole from us, Year of Plenty / Monopoly they played.
+    Uncertain (we do not invent certainty): which cards they discarded, which unknown
+    card was stolen when we were not involved, composition of their bank trades beyond
+    the public give/receive.
+    """
+    board = observation["board"]
+    log = observation.get("log") or []
+    tiles_by_number = {}
+    tile_resource = {}
+    for tile in board["tiles"]:
+        key = _tile_key(tile["tile"])
+        tile_resource[key] = tile.get("resource")
+        num = tile.get("number")
+        if num:
+            tiles_by_number.setdefault(num, []).append(key)
+
+    # Ownership evolves with the log. Start empty; initial placements appear as BUILD_*.
+    settlements = {"me": set(), "opponent": set()}
+    cities = {"me": set(), "opponent": set()}
+    hand = Counter()
+    rolls_seen = 0
+    free_roads_left = 0  # PLAY_ROAD_BUILDING grants two free roads
+    robber = None
+    for tile in board["tiles"]:
+        if tile.get("resource") is None and tile.get("number") is None:
+            robber = _tile_key(tile["tile"])  # desert default before first MOVE_ROBBER
+            break
+
+    for entry in log:
+        player = entry.get("player")
+        kind = entry.get("type")
+        if kind == "BUILD_SETTLEMENT":
+            settlements[player].add(entry["node"])
+            # Initial placements (before any roll) are free; later settlements cost.
+            if player == "opponent" and rolls_seen > 0:
+                hand -= Counter(BUILD_COSTS["BUILD_SETTLEMENT"])
+        elif kind == "BUILD_CITY":
+            node = entry["node"]
+            settlements[player].discard(node)
+            cities[player].add(node)
+            if player == "opponent":
+                hand -= Counter(BUILD_COSTS["BUILD_CITY"])
+        elif kind == "BUILD_ROAD":
+            if player == "opponent" and rolls_seen > 0:
+                if free_roads_left > 0:
+                    free_roads_left -= 1
+                else:
+                    hand -= Counter(BUILD_COSTS["BUILD_ROAD"])
+        elif kind == "PLAY_ROAD_BUILDING" and player == "opponent":
+            free_roads_left += 2
+        elif kind == "BUY_DEVELOPMENT_CARD":
+            if player == "opponent":
+                hand -= Counter(BUILD_COSTS["BUY_DEVELOPMENT_CARD"])
+        elif kind == "MARITIME_TRADE" and player == "opponent":
+            hand[entry["give"]] -= entry["give_count"]
+            hand[entry["receive"]] += 1
+        elif kind == "PLAY_YEAR_OF_PLENTY" and player == "opponent":
+            hand += Counter(entry.get("resources") or [])
+        elif kind == "PLAY_MONOPOLY" and player == "opponent":
+            # Exact gain unknown without our past hand; do not invent a number.
+            pass
+        elif kind == "ROLL":
+            rolls_seen += 1
+            dice = entry.get("dice") or [0, 0]
+            total = sum(dice)
+            if total == 7:
+                continue
+            for tkey in tiles_by_number.get(total, []):
+                if tkey == robber:
+                    continue
+                res = tile_resource.get(tkey)
+                if not res:
+                    continue
+                nodes = set()
+                for tile in board["tiles"]:
+                    if _tile_key(tile["tile"]) == tkey:
+                        nodes = set(tile["nodes"])
+                        break
+                for node in nodes & settlements["opponent"]:
+                    hand[res] += 1
+                for node in nodes & cities["opponent"]:
+                    hand[res] += 2
+        elif kind == "MOVE_ROBBER":
+            robber = _tile_key(entry["tile"])
+            stole_from = entry.get("stole_from")
+            stolen = entry.get("stolen_resource")
+            if player == "opponent" and stole_from == "me" and stolen:
+                hand[stolen] += 1
+            elif player == "me" and stole_from == "opponent" and stolen:
+                hand[stolen] -= 1
+        elif kind == "DISCARD" and player == "opponent":
+            # Count known, composition unknown — do not guess which cards.
+            pass
+
+        for r in list(hand):
+            if hand[r] < 0:
+                hand[r] = 0
+
+    # Align total with public card count when our estimate overshoots
+    public_count = observation["opponent"].get("resource_cards")
+    if public_count is not None:
+        while sum(hand.values()) > public_count:
+            # Drop from the most plentiful estimated resource
+            rich = max(RESOURCES, key=lambda r: hand[r])
+            if hand[rich] <= 0:
+                break
+            hand[rich] -= 1
+
+    return {r: int(hand[r]) for r in RESOURCES}
+
+
+def opponent_likely_rich_resource(observation):
+    """Best monopoly / steal target from the public estimate."""
+    est = estimate_opponent_resources(observation)
+    # If everything is zero, fall back to resources their buildings touch
+    if sum(est.values()) == 0:
+        _, resources, _ = _node_info(observation["board"])
+        opp = observation["opponent"]
+        touched = Counter()
+        for node in opp.get("settlements", []) + opp.get("cities", []):
+            for res in resources.get(node, set()):
+                weight = 2 if node in opp.get("cities", []) else 1
+                touched[res] += weight
+        if touched:
+            return max(touched, key=touched.get)
+        return "ORE"
+    return max(est, key=est.get)
+
+
+# ---------------------------------------------------------------------------------
 # Board / resource helpers
 # ---------------------------------------------------------------------------------
 
@@ -318,16 +456,19 @@ def _pick_initial(observation, actions, production, resources, ports):
 def _pick_robber(observation, actions):
     tile_pips = _tile_pips(observation["board"])
     opp = observation["opponent"]
+    est = estimate_opponent_resources(observation)
+    # Prefer stealing when they likely still hold cards
+    likely_cards = sum(est.values())
+    public_cards = opp.get("resource_cards", 0)
 
     def score(a):
         s = 0.0
         if a.get("steal_from") == "opponent":
             s += 20.0
+            s += 2.0 * max(likely_cards, public_cards)
         s += tile_pips.get(_tile_key(a["tile"]), 0)
-        # Prefer tiles where opponent actually sits
         if _opponent_nodes_on_tile(observation["board"], a["tile"], opp):
             s += 5.0
-        # Avoid our own high production if we can (steal_from null and we touch it)
         return s
 
     return max(actions, key=score)["id"]
@@ -395,17 +536,24 @@ def _pick_trade(observation, actions):
 
 def _pick_dev_play(observation, actions, kind):
     if kind == "PLAY_MONOPOLY":
-        # Target a resource we likely need for the next build
+        # Blend what we need with what the log says they likely hold
         me_res = observation["me"].get("resources") or {}
+        est = estimate_opponent_resources(observation)
         missing = _missing_for(BUILD_COSTS["BUILD_CITY"], me_res)
         if not missing:
             missing = _missing_for(BUILD_COSTS["BUILD_SETTLEMENT"], me_res)
-        if missing:
-            target = max(missing, key=missing.get)
-            for a in actions:
-                if a.get("resource") == target:
-                    return a["id"]
-        return actions[0]["id"]
+        rich = opponent_likely_rich_resource(observation)
+
+        def mono_score(a):
+            res = a.get("resource")
+            score = float(est.get(res, 0)) * 3.0
+            if res == rich:
+                score += 2.0
+            if res in missing:
+                score += 4.0 + missing[res]
+            return score
+
+        return max(actions, key=mono_score)["id"]
 
     if kind == "PLAY_YEAR_OF_PLENTY":
         me_res = observation["me"].get("resources") or {}
