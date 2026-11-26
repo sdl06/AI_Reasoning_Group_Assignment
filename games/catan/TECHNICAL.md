@@ -32,10 +32,27 @@ Eval numbers: `docs/students/CATAN_EVAL.md`
 
 | Matchup | Result |
 |---|---|
-| Heuristic vs random (held-out, 1000 games) | **998–2** |
-| H+Q (`act` with `USE_Q=True`) vs H (1000 games) | 423–577 |
+| Heuristic v2 vs random (held-out, 1000 games) | **1000–0** |
+| Heuristic v2 vs heuristic v1 (held-out, 1000 games) | **638–362** |
+| H+Q (`act` with `USE_Q=True`) vs heuristic v2 (1000 games) | 373–627 |
+| Demo team A vs heuristic v1 → v2 (1000 games) | 236 → 139 demo wins |
 
-The learned table did **not** beat the hand-written policy on held-out seeds, so the tournament default is `USE_Q = False` (`act` == heuristic). The Q-table remains embedded so `action_value` is a real learned estimate for the academic checks and write-up.
+The learned table did **not** beat the hand-written policy on held-out seeds, so the tournament default is `USE_Q = False` (`act` == heuristic). The Q-table remains embedded so `action_value` is a real learned estimate for the academic checks and write-up. It was trained against heuristic v1, which is part of why it loses by more against v2.
+
+Earlier versions of `eval_catan.py` called `act` with whatever `USE_Q` was set to, so once `USE_Q = False` the "H+Q vs H" row compared the heuristic with itself (exactly 50%). The script now forces Q on for the H+Q side.
+
+### Heuristic v2 (what changed from v1, and why)
+
+Each change was kept only if it won against the previous version over 1000 seeds × both sides (2000 games, standard error about 1.1%). Changes that tested neutral were dropped.
+
+| Change | Result vs previous version |
+|---|---|
+| **Robber** scores a tile as `pips × (rival cards per payout − 1.5 × our cards per payout)`, plus a bonus for stealing when the rival holds cards. v1 only added pips, so it blocked our own tiles in 1017 of 2737 robber moves (37%). | 54.5% |
+| **Roads** aim only at nodes we can legally settle (distance rule from the board's edge adjacency), and count a buildable node one more road away at 0.7. | 59.4% (cumulative vs v1) |
+| **Trades** no longer fire just to afford a road (4:1 for a road spends cards a city or settlement needs), unless we are racing for longest road. | 55.6% |
+| Tried and dropped: saving ore instead of buying dev cards, cities by raw pips, settlements before cities early, skipping roads that lead nowhere. | 49.6–50.0% |
+
+**Speed.** The board never changes during a game, so per-node production, tile nodes, tiles by number and node adjacency are computed once and cached at module level (the process lives for the whole game). The opponent-hand reconstruction no longer rescans every tile for every roll in the log. Agent time per decision fell from about 0.066 ms to 0.024 ms, far below the judge's 2–6 ms transport cost per Catan decision.
 
 Retrain / re-eval:
 
@@ -46,7 +63,7 @@ python docs/students/eval_catan.py --games 500 --start-seed 100000
 
 ## Time and memory
 
-- Decisions are O(#legal actions) scoring — milliseconds.
+- Decisions are O(#legal actions) scoring, about 0.02 ms each; static board facts are cached once per game.
 - If `time_remaining_s < 0.35`, `act` skips Q scoring and uses the heuristic immediately.
 - Offline training: ~3000 games in under a minute on a typical machine.
 

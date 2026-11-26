@@ -98,16 +98,11 @@ def estimate_opponent_resources(observation):
     card was stolen when we were not involved, composition of their bank trades beyond
     the public give/receive.
     """
-    board = observation["board"]
+    info = _board(observation["board"])
     log = observation.get("log") or []
-    tiles_by_number = {}
-    tile_resource = {}
-    for tile in board["tiles"]:
-        key = _tile_key(tile["tile"])
-        tile_resource[key] = tile.get("resource")
-        num = tile.get("number")
-        if num:
-            tiles_by_number.setdefault(num, []).append(key)
+    tiles_by_number = info["tiles_by_number"]
+    tile_resource = info["tile_resource"]
+    tile_nodes = info["tile_nodes"]
 
     # Ownership evolves with the log. Start empty; initial placements appear as BUILD_*.
     settlements = {"me": set(), "opponent": set()}
@@ -115,11 +110,7 @@ def estimate_opponent_resources(observation):
     hand = Counter()
     rolls_seen = 0
     free_roads_left = 0  # PLAY_ROAD_BUILDING grants two free roads
-    robber = None
-    for tile in board["tiles"]:
-        if tile.get("resource") is None and tile.get("number") is None:
-            robber = _tile_key(tile["tile"])  # desert default before first MOVE_ROBBER
-            break
+    robber = info["desert"]  # desert default before first MOVE_ROBBER
 
     for entry in log:
         player = entry.get("player")
@@ -166,11 +157,7 @@ def estimate_opponent_resources(observation):
                 res = tile_resource.get(tkey)
                 if not res:
                     continue
-                nodes = set()
-                for tile in board["tiles"]:
-                    if _tile_key(tile["tile"]) == tkey:
-                        nodes = set(tile["nodes"])
-                        break
+                nodes = tile_nodes[tkey]
                 for node in nodes & settlements["opponent"]:
                     hand[res] += 1
                 for node in nodes & cities["opponent"]:
@@ -274,23 +261,82 @@ def _tile_key(tile):
     return tuple(tile) if isinstance(tile, (list, tuple)) else tile
 
 
-def _node_info(board):
-    """Per-node pip total, resource set, and whether a port touches the node."""
+# The board never changes during a game, so everything derived from it is computed once
+# and reused on every later decision (the process stays alive for the whole game).
+_BOARD_CACHE = {"key": None, "info": None}
+
+
+def _board_key(board):
+    return tuple(
+        (tuple(t["tile"]), t.get("number"), t.get("resource")) for t in board["tiles"]
+    )
+
+
+def _board(board):
+    """Static board facts, cached per board: per-node pips/resources/ports, per-tile nodes,
+    tiles by dice number, and node adjacency (from tile edges) for the distance rule."""
+    key = _board_key(board)
+    if _BOARD_CACHE["key"] == key:
+        return _BOARD_CACHE["info"]
     production = {}
     resources = {}
+    tile_nodes = {}
+    tile_resource = {}
+    tile_pips = {}
+    tiles_by_number = {}
+    neighbors = {}
+    desert = None
     for tile in board["tiles"]:
-        pips = PIPS.get(tile.get("number"), 0)
+        tkey = _tile_key(tile["tile"])
+        num = tile.get("number")
+        pips = PIPS.get(num, 0)
         res = tile.get("resource")
+        tile_nodes[tkey] = frozenset(tile["nodes"])
+        tile_resource[tkey] = res
+        tile_pips[tkey] = pips
+        if num:
+            tiles_by_number.setdefault(num, []).append(tkey)
+        if res is None and num is None and desert is None:
+            desert = tkey
         for node in tile["nodes"]:
             production[node] = production.get(node, 0) + pips
             resources.setdefault(node, set())
             if res:
                 resources[node].add(res)
+        for a, b in tile.get("edges", []):
+            neighbors.setdefault(a, set()).add(b)
+            neighbors.setdefault(b, set()).add(a)
     ports = {}
     for port in board.get("ports", []):
         for node in port["nodes"]:
             ports[node] = port.get("resource")  # None => 3:1
-    return production, resources, ports
+    info = {
+        "production": production,
+        "resources": resources,
+        "ports": ports,
+        "tile_nodes": tile_nodes,
+        "tile_resource": tile_resource,
+        "tile_pips": tile_pips,
+        "tiles_by_number": tiles_by_number,
+        "neighbors": neighbors,
+        "desert": desert,
+    }
+    _BOARD_CACHE["key"] = key
+    _BOARD_CACHE["info"] = info
+    return info
+
+
+def _node_info(board):
+    """Per-node pip total, resource set, and whether a port touches the node."""
+    info = _board(board)
+    return info["production"], info["resources"], info["ports"]
+
+
+def _can_settle(node, occupied, neighbors):
+    """Distance rule: a node is buildable only if it and all its neighbours are empty."""
+    if node in occupied:
+        return False
+    return not (neighbors.get(node, set()) & occupied)
 
 
 def _node_score(node, production, resources, ports, prefer_missing=None):
@@ -326,14 +372,27 @@ def _edge_key(edge):
     return tuple(sorted(edge))
 
 
-def _road_toward_score(edge, production, resources, ports, my_nodes, occupied, road_bonus=0.0):
-    """Prefer roads that reach a high-value empty node we do not already own."""
+def _road_toward_score(
+    edge, production, resources, ports, my_nodes, occupied, road_bonus=0.0, neighbors=None
+):
+    """Prefer roads that reach a high-value node we could legally settle.
+
+    With `neighbors`, a node next to any building scores nothing (distance rule), and a
+    node one more road away is counted at a discount, so roads lead somewhere buildable.
+    """
     a, b = edge
     score = 0.0
     for node in (a, b):
         if node in my_nodes or node in occupied:
             continue
-        score = max(score, _node_score(node, production, resources, ports))
+        if neighbors is None:
+            score = max(score, _node_score(node, production, resources, ports))
+            continue
+        if _can_settle(node, occupied, neighbors):
+            score = max(score, _node_score(node, production, resources, ports))
+        for nxt in neighbors.get(node, ()):
+            if nxt not in (a, b) and _can_settle(nxt, occupied, neighbors):
+                score = max(score, 0.7 * _node_score(nxt, production, resources, ports))
     if a in my_nodes or b in my_nodes:
         score += 0.5
     score += road_bonus
@@ -381,21 +440,20 @@ def _my_nodes(observation):
 
 
 def _tile_pips(board):
-    out = {}
-    for tile in board["tiles"]:
-        out[_tile_key(tile["tile"])] = PIPS.get(tile.get("number"), 0)
-    return out
+    return _board(board)["tile_pips"]
 
 
 def _opponent_nodes_on_tile(board, tile_coord, opponent):
-    nodes = set()
-    key = _tile_key(tile_coord)
-    for tile in board["tiles"]:
-        if _tile_key(tile["tile"]) == key:
-            nodes = set(tile["nodes"])
-            break
+    nodes = _board(board)["tile_nodes"].get(_tile_key(tile_coord), frozenset())
     opp = set(opponent.get("settlements", [])) | set(opponent.get("cities", []))
     return nodes & opp
+
+
+def _tile_weight(nodes, player):
+    """Cards this player collects when the tile pays: 1 per settlement, 2 per city."""
+    settlements = set(player.get("settlements", []))
+    cities = set(player.get("cities", []))
+    return len(nodes & settlements) + 2 * len(nodes & cities)
 
 
 def _can_afford_after_trade(resources, trade):
@@ -511,30 +569,35 @@ def _pick_initial(observation, actions, production, resources, ports):
     # Road after settlement: point toward best empty neighbour
     occupied = _occupied_nodes(observation)
     my_nodes = _my_nodes(observation)
+    neighbors = _board(observation["board"])["neighbors"]
     return max(
         actions,
         key=lambda a: _road_toward_score(
-            a["edge"], production, resources, ports, my_nodes, occupied
+            a["edge"], production, resources, ports, my_nodes, occupied, 0.0, neighbors
         ),
     )["id"]
 
 
 def _pick_robber(observation, actions):
-    tile_pips = _tile_pips(observation["board"])
+    """Block the tile that costs the rival the most and us the least, and steal if we can.
+
+    Value of a tile = pips x (rival's cards per payout - our cards per payout). The old
+    version only added pips, so it often blocked our own production (about 37% of moves).
+    """
+    info = _board(observation["board"])
+    tile_pips = info["tile_pips"]
+    tile_nodes = info["tile_nodes"]
+    me = observation["me"]
     opp = observation["opponent"]
-    est = estimate_opponent_resources(observation)
-    # Prefer stealing when they likely still hold cards
-    likely_cards = sum(est.values())
-    public_cards = opp.get("resource_cards", 0)
+    public_cards = opp.get("resource_cards", 0) or 0
 
     def score(a):
-        s = 0.0
-        if a.get("steal_from") == "opponent":
-            s += 20.0
-            s += 2.0 * max(likely_cards, public_cards)
-        s += tile_pips.get(_tile_key(a["tile"]), 0)
-        if _opponent_nodes_on_tile(observation["board"], a["tile"], opp):
-            s += 5.0
+        key = _tile_key(a["tile"])
+        nodes = tile_nodes.get(key, frozenset())
+        pips = tile_pips.get(key, 0)
+        s = pips * (_tile_weight(nodes, opp) - 1.5 * _tile_weight(nodes, me))
+        if a.get("steal_from") == "opponent" and public_cards > 0:
+            s += 6.0
         return s
 
     return max(actions, key=score)["id"]
@@ -543,11 +606,12 @@ def _pick_robber(observation, actions):
 def _pick_road(observation, actions, production, resources, ports):
     occupied = _occupied_nodes(observation)
     my_nodes = _my_nodes(observation)
+    neighbors = _board(observation["board"])["neighbors"]
     road_bonus = 3.0 if _wants_longest_road(observation) else 0.0
     return max(
         actions,
         key=lambda a: _road_toward_score(
-            a["edge"], production, resources, ports, my_nodes, occupied, road_bonus
+            a["edge"], production, resources, ports, my_nodes, occupied, road_bonus, neighbors
         ),
     )["id"]
 
@@ -575,7 +639,11 @@ def _trade_unlocks_something(observation, trade):
     if after_hand is None:
         return False
     after = set(_affordable_builds(after_hand))
-    valuable = {"BUILD_CITY", "BUILD_SETTLEMENT", "BUY_DEVELOPMENT_CARD", "BUILD_ROAD"}
+    # A 4:1 trade just to afford a road wastes cards a city or settlement needs.
+    # Roads count only when we are racing for longest road.
+    valuable = {"BUILD_CITY", "BUILD_SETTLEMENT", "BUY_DEVELOPMENT_CARD"}
+    if _wants_longest_road(observation):
+        valuable.add("BUILD_ROAD")
     return bool((after - before) & valuable)
 
 
