@@ -40,7 +40,7 @@ PRIORITY = [
 
 
 # When True, act may override the heuristic if Q has a clear preference.
-USE_Q = True
+USE_Q = False
 # Minimum Q advantage over the heuristic action before we override.
 Q_MARGIN = 0.05
 
