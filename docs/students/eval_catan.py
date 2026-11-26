@@ -79,7 +79,14 @@ def main():
         return agent.heuristic_policy(obs)
 
     def hq(obs):
-        return agent.act(obs)["action"]
+        # Force Q on for this side; otherwise act() is the heuristic when USE_Q is False
+        # and the matchup would compare the heuristic with itself.
+        saved = agent.USE_Q
+        agent.USE_Q = True
+        try:
+            return agent.act(obs)["action"]
+        finally:
+            agent.USE_Q = saved
 
     def rand(obs):
         return rng.choice(obs["actions"])["id"]

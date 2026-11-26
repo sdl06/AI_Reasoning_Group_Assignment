@@ -7,19 +7,19 @@ Training used seeds starting at 1 for 3000 games, so this range does not overlap
 
 | | Wins |
 |---|---|
-| Heuristic (H) | 998 |
-| Random | 2 |
+| Heuristic (H) | 1000 |
+| Random | 0 |
 | Draw | 0 |
 
 ## H+Q (`act`) vs H (`heuristic_policy`)
 
 | | Wins |
 |---|---|
-| H+Q | 423 |
-| H | 577 |
+| H+Q | 373 |
+| H | 627 |
 | Draw | 0 |
 
-H+Q win rate: **42.3%** over 1000 games in 28.9s.
+H+Q win rate: **37.3%** over 1000 games in 12.7s.
 
 ## Tournament default
 
