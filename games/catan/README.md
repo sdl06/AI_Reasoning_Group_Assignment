@@ -146,3 +146,6 @@ check_requirements("catan_agent.py")
 ```
 
 Template: `student_templates/catan_agent.py`. A working example, a fixed priority list: `examples/team_demo_A/catan_agent.py`.
+
+**Start-to-finish build guide:** [docs/students/CATAN_PLAYBOOK.md](../../docs/students/CATAN_PLAYBOOK.md).  
+**Our agent:** [catan_agent.py](catan_agent.py) — technical notes in [TECHNICAL.md](TECHNICAL.md).
