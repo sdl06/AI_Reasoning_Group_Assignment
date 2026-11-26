@@ -30,8 +30,9 @@ read samples → implement required stubs → strong heuristic
 **File layout we aim for.**
 
 ```text
-student_templates/catan_agent.py   # start from this
-docs/students/train_catan.py       # optional local trainer (or a Colab cell)
+games/catan/catan_agent.py         # our competing agent (mirrors games/chess/chess_agent.py)
+docs/students/train_catan.py       # offline Q-learning trainer
+docs/students/eval_catan.py        # held-out evaluation
 # inside catan_agent.py after training:
 #   Q = { "...features...|BUILD_CITY": 0.81, ... }
 ```
