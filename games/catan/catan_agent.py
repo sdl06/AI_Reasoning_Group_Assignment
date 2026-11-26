@@ -294,22 +294,22 @@ def _node_info(board):
 
 
 def _node_score(node, production, resources, ports, prefer_missing=None):
+    """Step 8: pip + diversity + ports + city-path (ore/wheat) bonuses."""
     score = float(production.get(node, 0))
     kinds = resources.get(node, set())
     score += 1.5 * len(kinds)
+    # City path is critical to reach 7 VP quickly in this variant.
+    if "ORE" in kinds:
+        score += 1.25
+    if "WHEAT" in kinds:
+        score += 1.0
+    if "BRICK" in kinds or "WOOD" in kinds:
+        score += 0.35
     if node in ports:
         score += 2.0 if ports[node] is None else 1.5
     if prefer_missing:
-        score += 2.0 * len(kinds & prefer_missing)
-    # Mild preference for balanced numbers already in production via pips.
+        score += 2.5 * len(kinds & prefer_missing)
     return score
-
-
-def _owned_resources(me):
-    have = set()
-    production, resources, _ = None, None, None
-    # Settlements/cities imply resources from adjacent tiles — caller passes board.
-    return have
 
 
 def _my_resource_kinds(observation):
@@ -326,7 +326,7 @@ def _edge_key(edge):
     return tuple(sorted(edge))
 
 
-def _road_toward_score(edge, production, resources, ports, my_nodes, occupied):
+def _road_toward_score(edge, production, resources, ports, my_nodes, occupied, road_bonus=0.0):
     """Prefer roads that reach a high-value empty node we do not already own."""
     a, b = edge
     score = 0.0
@@ -334,10 +334,36 @@ def _road_toward_score(edge, production, resources, ports, my_nodes, occupied):
         if node in my_nodes or node in occupied:
             continue
         score = max(score, _node_score(node, production, resources, ports))
-    # Slight bonus for extending from our network
     if a in my_nodes or b in my_nodes:
         score += 0.5
+    score += road_bonus
     return score
+
+
+def _wants_longest_road(observation):
+    """Contest longest road when the 2 VP would matter and we are close."""
+    me = observation["me"]
+    opp = observation["opponent"]
+    if me.get("has_longest_road"):
+        return False
+    my_len = me.get("longest_road_length", 0)
+    opp_len = opp.get("longest_road_length", 0)
+    vp = me.get("victory_points", 0)
+    vps_to_win = observation.get("vps_to_win", 7)
+    # Worth fighting if we are within 1 of their length and VP race is live
+    return my_len + 1 >= max(opp_len, 4) and vp + 2 >= vps_to_win - 1
+
+
+def _wants_largest_army(observation):
+    me = observation["me"]
+    opp = observation["opponent"]
+    if me.get("has_largest_army"):
+        return False
+    my_knights = me.get("played_development_cards", {}).get("KNIGHT", 0)
+    opp_knights = opp.get("played_development_cards", {}).get("KNIGHT", 0)
+    vp = me.get("victory_points", 0)
+    vps_to_win = observation.get("vps_to_win", 7)
+    return my_knights + 1 >= max(opp_knights, 2) and vp + 2 >= vps_to_win - 1
 
 
 def _occupied_nodes(observation):
@@ -517,10 +543,11 @@ def _pick_robber(observation, actions):
 def _pick_road(observation, actions, production, resources, ports):
     occupied = _occupied_nodes(observation)
     my_nodes = _my_nodes(observation)
+    road_bonus = 3.0 if _wants_longest_road(observation) else 0.0
     return max(
         actions,
         key=lambda a: _road_toward_score(
-            a["edge"], production, resources, ports, my_nodes, occupied
+            a["edge"], production, resources, ports, my_nodes, occupied, road_bonus
         ),
     )["id"]
 
@@ -616,17 +643,37 @@ def _pick_dev_play(observation, actions, kind):
 
 
 def _pick_play_turn(observation, actions, production, resources, ports):
+    """Step 8: endgame VP race, army/road contests, hand-size discipline."""
     types = _action_types(observation)
     prefer = set(RESOURCES) - _my_resource_kinds(observation)
     me = observation["me"]
+    opp = observation["opponent"]
     vp = me.get("victory_points", 0)
+    opp_vp = opp.get("visible_victory_points", 0)
     vps_to_win = observation.get("vps_to_win", 7)
+    hand = me.get("resource_cards", sum((me.get("resources") or {}).values()))
 
-    # Endgame: if a build wins or reaches 6+, prioritise VP actions hard
+    # Endgame / race pressure
     urgent_city = vp >= vps_to_win - 2
     urgent_settle = vp >= vps_to_win - 1
+    defending = opp_vp >= vps_to_win - 2
+    contest_army = _wants_largest_army(observation)
+    contest_road = _wants_longest_road(observation)
 
-    for kind in PRIORITY:
+    # Dynamic priority: knights earlier when defending or hunting largest army
+    priority = list(PRIORITY)
+    if defending or contest_army:
+        for card in ("PLAY_KNIGHT_CARD",):
+            if card in priority:
+                priority.remove(card)
+                priority.insert(0, card)
+    if contest_road and "BUILD_ROAD" in priority:
+        priority.remove("BUILD_ROAD")
+        # after settlements/cities still, but before casual trades
+        insert_at = priority.index("BUY_DEVELOPMENT_CARD") if "BUY_DEVELOPMENT_CARD" in priority else 3
+        priority.insert(insert_at, "BUILD_ROAD")
+
+    for kind in priority:
         options = [a for a in actions if a["type"] == kind]
         if not options:
             continue
@@ -638,26 +685,56 @@ def _pick_play_turn(observation, actions, production, resources, ports):
             return _pick_settlement(options, production, resources, ports, prefer)
 
         if kind == "BUILD_ROAD":
-            # Skip random roads if we are one VP from a settlement we cannot yet place
-            # and a trade might be better — but if road is offered, take best direction.
+            # Avoid building roads when a winning city/settlement is available (already handled)
+            # or when we only have road actions but need to dump cards via trade first.
+            if hand >= 8 and "MARITIME_TRADE" in types:
+                trade_id = _pick_trade(observation, [a for a in actions if a["type"] == "MARITIME_TRADE"])
+                if trade_id is not None:
+                    return trade_id
             return _pick_road(observation, options, production, resources, ports)
 
         if kind == "MARITIME_TRADE":
             trade_id = _pick_trade(observation, options)
             if trade_id is not None:
                 return trade_id
-            continue  # do not trade for no reason
+            # Hand discipline: if we would discard on a 7, trade down even without a build
+            if hand >= 8:
+                # Prefer trading the most plentiful resource for something we lack
+                me_res = me.get("resources") or {}
+                missing = _missing_for(BUILD_COSTS["BUILD_CITY"], me_res)
+                if not missing:
+                    missing = _missing_for(BUILD_COSTS["BUILD_SETTLEMENT"], me_res)
+
+                def dump_score(a):
+                    s = me_res.get(a["give"], 0)
+                    if a["receive"] in missing:
+                        s += 5
+                    return s
+
+                return max(options, key=dump_score)["id"]
+            continue
 
         if kind == "BUY_DEVELOPMENT_CARD":
-            # Prefer city/settlement path when ore-poor late; still buy if offered
-            if urgent_settle and "BUILD_SETTLEMENT" not in types and "BUILD_CITY" not in types:
-                return options[0]["id"]
-            if urgent_city and "BUILD_CITY" in types:
+            if "BUILD_CITY" in types:
                 continue
+            if urgent_settle and "BUILD_SETTLEMENT" in types:
+                continue
+            # Buy for VP pressure, army contest, or to shed cards
+            if contest_army or urgent_city or urgent_settle or hand >= 7 or defending:
+                return options[0]["id"]
+            # Ore-heavy hands: buying is fine
+            me_res = me.get("resources") or {}
+            if me_res.get("ORE", 0) >= 2:
+                return options[0]["id"]
+            continue
+
+        if kind == "PLAY_KNIGHT_CARD":
             return options[0]["id"]
 
-        if kind in ("PLAY_KNIGHT_CARD", "PLAY_ROAD_BUILDING"):
-            return options[0]["id"]
+        if kind == "PLAY_ROAD_BUILDING":
+            if contest_road or "BUILD_SETTLEMENT" not in types:
+                return options[0]["id"]
+            continue
 
         if kind in ("PLAY_YEAR_OF_PLENTY", "PLAY_MONOPOLY"):
             return _pick_dev_play(observation, options, kind)
