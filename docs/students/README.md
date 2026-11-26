@@ -11,7 +11,7 @@ Your team writes four Python agents, one for each challenge. They play another t
 | Battleship with moving ships | `battleship_agent.py` | [games/battleship/README.md](../../games/battleship/README.md) |
 | Catan Tournament 1v1 | `catan_agent.py` | [games/catan/README.md](../../games/catan/README.md) |
 
-**Read [CHALLENGES.md](CHALLENGES.md) first: it explains the four challenges in one page.** [ASSIGNMENT.md](ASSIGNMENT.md) lists the algorithms you must implement. [TRAINING.md](TRAINING.md) shows how to train your Catan agent offline. [sample_observations/](sample_observations/) has real examples of what your agents receive, so read them before writing code.
+**Read [CHALLENGES.md](CHALLENGES.md) first: it explains the four challenges in one page.** [ASSIGNMENT.md](ASSIGNMENT.md) lists the algorithms you must implement. [TRAINING.md](TRAINING.md) shows how to train your Catan agent offline. **Building Catan end-to-end:** follow [CATAN_PLAYBOOK.md](CATAN_PLAYBOOK.md) (process, heuristic, Q-learning, eval, upgrades). [sample_observations/](sample_observations/) has real examples of what your agents receive, so read them before writing code.
 
 ## Getting started
 
